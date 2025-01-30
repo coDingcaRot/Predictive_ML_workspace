@@ -1,0 +1,41 @@
+#example 1 replace
+Replace:
+
+# make a prediction
+row = [5.1, 3.5, 1.4, 0.2]
+yhat = model.predict([row])
+
+With:
+
+# make a prediction
+row = [5.1, 3.5, 1.4, 0.2]
+import numpy as np
+rowArray = np.array(row).reshape(1,4)
+yhat = model.predict(rowArray)
+
+
+
+#example 5
+# Validation y does not need to be scaled.
+
+evaluateModel(model1, valX_scaled, valY_scaled, scY)
+
+Should be:
+
+evaluateModel(model1, valX_scaled, valY, scY)
+
+
+#example 6
+# The last part should be using testY and yVal for evaluation rather than scaled data.
+
+
+evaluateModel(gridModel.best_estimator_, valX_scaled, valY,  scY)
+
+# Evaluate both models with test (unseen) data.
+print("\n*** Base model with test data: ")
+evaluateModel(model1, testX_scaled, testY, scY)
+print(model1.get_params())
+print("\n*** Grid searched model with test data: ")
+evaluateModel(gridModel.best_estimator_, testX_scaled, testY, scY)
+print(gridModel.get_params())
+
