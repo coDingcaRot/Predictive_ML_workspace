@@ -1,0 +1,30 @@
+These versions work on Windows
+
+import keras
+print("Keras version: " + keras.__version__)
+
+import tensorflow as tf
+print("Tensorflow version: " + tf. __version__)
+
+import numpy
+print("Numpy version: " + numpy.version.version)
+
+import sklearn
+print("Sklearn version: " + sklearn.__version__)
+
+
+These configurations work on Windows:
+Keras version: 3.8.0
+Tensorflow version: 2.18.0
+Numpy version: 1.26.4
+NOTE: I still get a red squiggly with 'from keras.layers import Dense' but it works.
+
+Keras version: 3.8.0
+Tensorflow version: 2.18.0
+Numpy version: 1.26.2
+Sklearn version: 1.6.0
+pip install numpy==1.26.4
+pip install scikit-learn==1.6.0
+pip install tensorflow==2.18.0
+I believe keras is installed with tensorflow but if not
+pip install keras==3.8.0

@@ -1,0 +1,29 @@
+Grid searching lr, momentum and number of neurons after example 2 <- where to put
+
+To enable the grid search after example two, also replace this code for buildModel: <- what your changing
+
+def buildModel(num_nodes, learning_rate, momentum   ):
+    # define the keras model
+    model = Sequential()
+    model.add(Dense(num_nodes, input_dim=8, activation='relu',
+                    kernel_initializer='he_normal'))
+    model.add(Dense(1, activation='sigmoid'))
+
+    opitimizer = tf.keras.optimizers.SGD(
+        learning_rate=learning_rate, momentum=momentum, name="SGD",
+    )
+
+    # compile the keras model
+    model.compile(loss='binary_crossentropy', optimizer=opitimizer,
+                  metrics=['accuracy'])
+
+    # fit the keras model on the dataset
+    history = model.fit(X, y, epochs=80, batch_size=10, validation_data=(X_test,
+                        y_test))
+    # evaluate the keras model
+
+    # Evaluate the model.
+    loss, acc = model.evaluate(X_test, y_test, verbose=0)
+    print('Test Accuracy: ' + str(acc) + ' Num nodes: ' + str(num_nodes))
+    return history
+
