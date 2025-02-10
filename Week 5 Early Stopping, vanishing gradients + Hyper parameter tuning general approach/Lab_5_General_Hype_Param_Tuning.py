@@ -11,8 +11,7 @@ def ex1_basic_logi_reg():
     df = pd.read_csv(PATH + 'diabetes.csv', sep=',')
     # split into input (X) and output (y) variables
 
-    X = df[['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI',
-            'DiabetesPedigreeFunction', 'Age']]
+    X = df[['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']]
     y = df[['Outcome']]
 
     # Split into train and test data sets.
@@ -31,9 +30,7 @@ def ex1_basic_logi_reg():
     print(logisticModel.coef_)
 
     # Show confusion matrix and accuracy scores.
-    confusion_matrix = pd.crosstab(np.array(y_test['Outcome']), y_pred,
-                                   rownames=['Actual'],
-                                   colnames=['Predicted'])
+    confusion_matrix = pd.crosstab(np.array(y_test['Outcome']), y_pred, rownames=['Actual'], colnames=['Predicted'])
 
     print('\nAccuracy: ', metrics.accuracy_score(y_test, y_pred))
     print("\nConfusion Matrix")
