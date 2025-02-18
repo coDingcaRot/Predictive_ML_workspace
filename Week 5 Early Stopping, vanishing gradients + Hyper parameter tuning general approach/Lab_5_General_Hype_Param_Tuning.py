@@ -378,13 +378,12 @@ def exercise2_configure_lr_momentum_ttlnodes():
     import tensorflow as tf
     # load the dataset
     df = pd.read_csv(PATH + 'fluDiagnosis.csv')
-    # split into input (X) and output (y) variables
-    print(df)
 
+    # split into input (X) and output (y) variables
     X = df[['A', 'B']]
     # print(X) keeps the headers and sends it in as a dataframe
     # print(X.values) removes column headers and turns it into an numpy array
-    # print("X shape", X.shape[1]) .shape tells the amount of [rows, cols]
+    # print("X shape", X.shape) #.shape tells the amount of [rows, cols]
     y = df[['Diagnosed']]
     # Split into train and test data sets.
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
@@ -399,8 +398,7 @@ def exercise2_configure_lr_momentum_ttlnodes():
         opitimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate, momentum=momentum, name="SGD",)
 
         # compile the keras model
-        model.compile(loss='binary_crossentropy', optimizer=opitimizer,
-                      metrics=['accuracy'])
+        model.compile(loss='binary_crossentropy', optimizer=opitimizer, metrics=['accuracy'])
 
         # fit the keras model on the dataset
         history = model.fit(X, y, epochs=80, batch_size=10, validation_data=(X_test, y_test))
@@ -416,7 +414,6 @@ def exercise2_configure_lr_momentum_ttlnodes():
             "learning_rate": learning_rate,
             "momentum": momentum
         }
-
     def showLoss(history, numNodes):
         # Get training and test loss histories
         training_loss = history.history['loss']
@@ -432,7 +429,6 @@ def exercise2_configure_lr_momentum_ttlnodes():
         plt.title("Loss Graph")
         plt.plot(epoch_count, validation_loss, label=actualLabel)
         plt.legend()
-
     def showAccuracy(history, numNodes):
         # Get training and test loss histories
         training_loss = history.history['accuracy']
@@ -448,9 +444,9 @@ def exercise2_configure_lr_momentum_ttlnodes():
         plt.plot(epoch_count, validation_loss, label=actualLabel)
         plt.legend()
 
-    nodeCounts = [170, 200, 230]
-    lr = [0.001, 0.05, 0.1]
-    momentum = [0.1, 0.5, 0.9]
+    nodeCounts = [75, 90, 105]
+    lr = [0.0001]
+    momentum = [0.05]
     plt.subplots(nrows=1, ncols=2, figsize=(14, 7))
 
     results = []
@@ -468,4 +464,197 @@ def exercise2_configure_lr_momentum_ttlnodes():
 
     print("\nSummary of Results:")
     print(df_results)
-exercise2_configure_lr_momentum_ttlnodes()
+# exercise2_configure_lr_momentum_ttlnodes()
+
+def exercise3_configure_layers():
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    PATH = "../Datasets/"
+    from keras.models import Sequential
+    from keras.layers import Dense
+    import matplotlib.pyplot as plt
+    import tensorflow as tf
+    # load the dataset
+    df = pd.read_csv(PATH + 'fluDiagnosis.csv')
+    # split into input (X) and output (y) variables
+    X = df[['A', 'B']]
+    y = df[['Diagnosed']]
+
+    # Split into train and test data sets.
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+
+    def buildModel(numLayers):
+        # define the keras model
+        model = Sequential()
+
+        # Change to test out
+        neurons = 90 #old 170 -> new best 230
+        lr = 0.0001 #old 0.05 -> new best 0.001
+        momentum = 0.05 #old 0.1 -> 0.9
+
+        # Layer testing
+        model.add(Dense(neurons, input_dim=2, activation='relu',kernel_initializer='he_normal')) #initial layer
+        for i in range(0, numLayers - 1):
+            model.add(Dense(neurons, activation='relu',kernel_initializer='he_normal')) #added layers
+        model.add(Dense(1, activation='sigmoid'))
+
+        opitimizer = tf.keras.optimizers.SGD(learning_rate=lr, momentum=momentum, name="SGD",)
+
+        # Compile the keras model.
+        model.compile(loss='binary_crossentropy', optimizer=opitimizer,
+                      metrics=['accuracy'])
+
+        # Fit the keras model on the dataset.
+        history = model.fit(X, y, epochs=80, batch_size=10,
+                            validation_data=(X_test, y_test))
+
+        # Evaluate the model.
+        loss, acc = model.evaluate(X_test, y_test, verbose=0)
+        print('Test Accuracy: %.3f' % acc)
+        return history, {
+            "accuracy": acc,
+            "loss": loss,
+            "numLayers": numLayers,
+        }
+    def showLoss(history, numNodes):
+        # Get training and test loss histories
+        training_loss = history.history['loss']
+        validation_loss = history.history['val_loss']
+
+        # Create count of the number of epochs
+        epoch_count = range(1, len(training_loss) + 1)
+
+        # Visualize loss history for training data.
+        actualLabel = str(numNodes) + " layers"
+        plt.subplot(1, 2, 1)
+        # View loss on unseen data.
+        plt.title("Loss Graph")
+        plt.plot(epoch_count, validation_loss, label=actualLabel)
+        plt.legend()
+    def showAccuracy(history, numNodes):
+        # Get training and test loss histories
+        training_loss = history.history['accuracy']
+        validation_loss = history.history['val_accuracy']
+
+        # Create count of the number of epochs
+        epoch_count = range(1, len(training_loss) + 1)
+        plt.subplot(1, 2, 2)
+
+        actualLabel = str(numNodes) + " layers"
+        # View loss on unseen data.
+        plt.title("Accuracy Graph")
+        plt.plot(epoch_count, validation_loss, label=actualLabel)
+        plt.legend()
+
+    layers = [1, 3, 7]
+    plt.subplots(nrows=1, ncols=2, figsize=(14, 7))
+
+    results = []
+    for i in range(0, len(layers)):
+        history, summary = buildModel(layers[i])
+        showLoss(history, layers[i])
+        showAccuracy(history, layers[i])
+        results.append(summary)
+    plt.show()
+
+    df_results = pd.DataFrame(results)
+    print("\nSummary of Results:\n")
+    print(df_results)
+# exercise3_configure_layers()
+
+def exercise4_configure_batches():
+    import pandas as pd
+    from sklearn.model_selection import train_test_split
+    PATH = "../Datasets/"
+    from keras.models import Sequential
+    from keras.layers import Dense
+    import matplotlib.pyplot as plt
+    import tensorflow as tf
+    # load the dataset
+    df = pd.read_csv(PATH + 'fluDiagnosis.csv')
+    # split into input (X) and output (y) variables
+    X = df[['A', 'B']]
+    y = df[['Diagnosed']]
+
+    # Split into train and test data sets.
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+
+    def buildModel(batch):
+        # define the keras model
+        model = Sequential()
+
+        # Change to test out
+        layers = 3
+        neurons = 90 #old 170 -> new best 230
+        lr = 0.0001 #old 0.05 -> new best 0.001
+        momentum = 0.05 #old 0.1 -> 0.9
+
+        # Layer testing
+        model.add(Dense(neurons, input_dim=2, activation='relu',kernel_initializer='he_normal')) #initial layer
+        for i in range(0, layers - 1):
+            model.add(Dense(neurons, activation='relu',kernel_initializer='he_normal')) #added layers
+        model.add(Dense(1, activation='sigmoid'))
+
+        opitimizer = tf.keras.optimizers.SGD(learning_rate=lr, momentum=momentum, name="SGD",)
+
+        # Compile the keras model.
+        model.compile(loss='binary_crossentropy', optimizer=opitimizer,
+                      metrics=['accuracy'])
+
+        # Fit the keras model on the dataset.
+        history = model.fit(X, y, epochs=80, batch_size=batch,
+                            validation_data=(X_test, y_test))
+
+        # Evaluate the model.
+        loss, acc = model.evaluate(X_test, y_test, verbose=0)
+        print('Test Accuracy: %.3f' % acc)
+        return history, {
+            "accuracy": acc,
+            "loss": loss,
+            "batches": batch,
+        }
+    def showLoss(history, numNodes):
+        # Get training and test loss histories
+        training_loss = history.history['loss']
+        validation_loss = history.history['val_loss']
+
+        # Create count of the number of epochs
+        epoch_count = range(1, len(training_loss) + 1)
+
+        # Visualize loss history for training data.
+        actualLabel = str(numNodes) + " layers"
+        plt.subplot(1, 2, 1)
+        # View loss on unseen data.
+        plt.title("Loss Graph")
+        plt.plot(epoch_count, validation_loss, label=actualLabel)
+        plt.legend()
+    def showAccuracy(history, numNodes):
+        # Get training and test loss histories
+        training_loss = history.history['accuracy']
+        validation_loss = history.history['val_accuracy']
+
+        # Create count of the number of epochs
+        epoch_count = range(1, len(training_loss) + 1)
+        plt.subplot(1, 2, 2)
+
+        actualLabel = str(numNodes) + " layers"
+        # View loss on unseen data.
+        plt.title("Accuracy Graph")
+        plt.plot(epoch_count, validation_loss, label=actualLabel)
+        plt.legend()
+
+    batch = [15]
+    plt.subplots(nrows=1, ncols=2, figsize=(14, 7))
+
+    results = []
+    for i in range(0, len(batch)):
+        history, summary = buildModel(batch[i])
+        showLoss(history, batch[i])
+        showAccuracy(history, batch[i])
+        results.append(summary)
+    plt.show()
+
+    df_results = pd.DataFrame(results)
+    print("\nSummary of Results:\n")
+    print(df_results)
+# exercise4_configure_batches()
