@@ -71,7 +71,7 @@ obesity_df = remove_duplicates(obesity_df)
 cat_df, num_df = split_categorical_numerical(obesity_df)
 
 ############################################
-########## UNI VARIATE ANALYSIS ##########
+########## UNI VARIATE ANALYSIS ############
 ############################################
 
 def showcase_histogram(df, column_count, row_count):
@@ -287,8 +287,11 @@ sub_order = ['no', 'Sometimes', 'Frequently', 'Always']
 # plt.show()
 
 # Average age for
-obesity_df.groupby("obesity_status")["Age"].median().sort_values(ascending=True).plot(kind="bar",color = sns.color_palette("GnBu")  )
-plt.title("Average age of each obesity type")
+ # obesity_df.groupby("obesity_status")["Age"].median().sort_values(ascending=True).plot(kind="bar",color = sns.color_palette("GnBu")  )
+sns.clustermap(data=num_df)
+# sns.stripplot(data=obesity_df, x="Gender", y="Age",
+#               hue="obesity_status", palette="crest")
+plt.xticks(rotation=45, ha="right")
 plt.tight_layout()
 plt.show()
 
