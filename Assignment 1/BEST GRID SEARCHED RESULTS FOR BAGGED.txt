@@ -1,0 +1,9 @@
+BEST GRID SEARCHED RESULTS FOR BAGGED CLASSIFIERS
+Running RandomizedSearchCV for BaggedSVC...
+Best parameters for BaggedSVC: {'n_estimators': 100, 'estimator__kernel': 'linear', 'estimator__C': 10}
+
+Running RandomizedSearchCV for BaggedRandomForest...
+Best parameters for BaggedRandomForest: {'n_estimators': 100, 'estimator__n_estimators': 100, 'estimator__max_depth': 20}
+
+Running RandomizedSearchCV for BaggedDecisionTree...
+Best parameters for BaggedDecisionTree: {'n_estimators': 50, 'estimator__min_samples_split': 2, 'estimator__max_depth': 20}
