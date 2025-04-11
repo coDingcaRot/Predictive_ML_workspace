@@ -3,50 +3,40 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+from sklearn.model_selection import train_test_split
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
 
-heart_risk_df = pd.read_csv('HeartRisk.csv')
+# Load the dataset
+df = pd.read_csv("HeartRisk.csv")
 
-"""########## EDA PROCESS ##########"""
+# Check for structure and preview
+# df.info(), df.head()
 
-# INITIAL EDA
-def split_categorical_numerical(df):
-    """
-    Splits up the dataframe between categorical and numerical columns
-    :param df: pandas dataframe
-    :return: categorical_df of object type dataframe, numerical_df of number type dataframe
-    """
-    categorical_df = df.select_dtypes(include=['object'])
-    numerical_df = df.select_dtypes(exclude=['object'])
-    print(f"Categorical Column Count: {categorical_df.shape[1]}")
-    print(f"Numerical Column Count: {numerical_df.shape[1]}")
-    return categorical_df, numerical_df
-def initial_info(df, head_count, title):
-    """
-    Displays the initial information of a given dataset
-    :param df: pandas dataframe
-    :param title: title of the dataset
-    """
-    # Initial view
-    print(f"""
-{title} Dataset First {head_count} values
-{df.head(head_count)}
+# Full numerica and category
+df_num = df.select_dtypes(include=['number'])
+df_cat = df.select_dtypes(exclude=['number'])
+binary_cols = []
+cat_cols = []
+for col in df_cat.columns:
+   unique_count = df_cat[col].nunique()
+   if unique_count <= 2:
+       binary_cols.append(col)
+   else:
+     cat_cols.append(col)
+df_bin = df_cat[binary_cols]
+df_cat = df_cat[cat_cols]
 
-{title} Dataset Statistics
-{df.describe()}
+# # Samples
+df_num_sample = df_num.sample(frac=0.1, random_state=42)
+df_bin_sample = df_bin.sample(frac=0.1, random_state=42)
+df_cat_sample = df_cat.sample(frac=0.1, random_state=42)
 
-{title} Dataset Information
-{df.info()}
 
-{title} Dataset Shape: {df.shape}
+print(f'Numeric Sample {len(df_num_sample.columns)}')
+print(f'Binary Sample {len(df_bin_sample.columns)}')
+print(f'Categorical Sample {len(df_cat_sample.columns)}')
 
-{title} Dataset Column Missing Values \n{df.isna().sum()}
-""")
-# initial_info(heart_risk_df, 5, "Heart Risk")
-cat_df, num_df = split_categorical_numerical(heart_risk_df)
-
-# UNIVARIATE EDA
 def showcase_histogram(df, column_count, row_count):
     """
     Displays subplots of numerical dataframe. Iterates through the numerical pandas dataframe and plots the histogram for the values
@@ -68,24 +58,6 @@ def showcase_histogram(df, column_count, row_count):
         counter += 1
     plt.tight_layout(pad=2.0)
     plt.show()
-# Revised one does not work too well
-def display_histograms(df, display_rows, display_cols):
-    """
-    Takes in a numerical type dataframe and displays the histograms of each value.
-    :param df: pandas dataframe
-    :return: none
-    """
-    sns.set_palette("rocket")
-    fig, ax = plt.subplots(display_rows, display_cols ,figsize=(display_rows * 4, display_cols * 4))
-    ax = ax.flatten()
-    for i, col in enumerate(df.columns):
-        sns.countplot(df, x=col, ax=ax[i])
-        ax[i].set_title(f"{col} Histogram")
-    plt.tight_layout()
-    plt.show()
-# display_histograms(num_df, display_rows=2, display_cols=3)
-showcase_histogram(num_df, 3, 2)
-
 def showcase_barplots(df, column_count, row_count):
     """
     Displays subplots of categorical dataframe. Iterates through the categorical pandas dataframe and plots the bar plots for the values
@@ -112,6 +84,40 @@ def showcase_barplots(df, column_count, row_count):
 
     plt.tight_layout(pad=2.0)
     plt.show()
-showcase_barplots(cat_df, 9, 4)
 
-# MULTIVARIATE EDA
+# showcase_barplots(df_bin_sample, 5, 5)
+showcase_barplots(df_cat_sample, 4, 3)
+
+
+# print(df_bin.head(10))
+# df_num.info(), df_cat.info()
+# print('Total Numeric columns', df_num.shape[1])
+# print('Total Categorical Columns', df_cat.shape[1])
+
+
+# binary_map = {'Yes': 1, 'No': 0}
+# y_sample = df_cat_sample['HighRisk'].map(binary_map)
+# # print(y_sample.unique())
+
+# df_num_sample_y = pd.concat([df_num, y_sample], axis=1)
+# # print(df_num_sample_y.head(5))
+# print(df_cat_sample.head(5))
+# corr = df_num_sample_y.corr()
+# corr = corr.sort_values(by=['HighRisk'], ascending=False)
+# # Figure size and heatmap visuals
+# plt.figure(figsize=(10,10))
+# sns.heatmap(corr[['HighRisk']], cmap='rocket', annot=True, )
+# # plt.title(f"Numerical Data Fields Heatmap")
+# plt.xticks(rotation=45)  # Rotate x-axis labels if needed
+# plt.yticks(rotation=45)
+# plt.show()
+
+# train_df, test_df = train_test_split(df, test_size=0.2, stratify=df["HighRisk"])
+
+# # Save the datasets
+# train_path = "./data/train.csv"
+# test_path = "./data/test.csv"
+# train_df.to_csv(train_path, index=False)
+# test_df.to_csv(test_path, index=False)
+#
+# train_path, test_path
